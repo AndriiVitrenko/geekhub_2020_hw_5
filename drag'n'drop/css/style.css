@@ -1,5 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200italic,300,300italic,regular,italic,600,600italic,700,700italic,900,900italic);
 
+* {
+    box-sizing: border-box;
+}
+
 .container {
     background: url(../img/JavaScript-logo.png);
     width: 30%;
@@ -17,16 +21,18 @@
     justify-content: flex-start;
     flex-wrap: nowrap;
     align-items: center;
-    background-color: rgba(20, 33, 61, 0.7);
+    background-color: rgba(20, 33, 61, 0.85);
     color: white;
     padding: 3px 5px;
     padding-left: 8px;
     border-radius: 6px;
+    min-width: 84px;
 }
 
 span {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 18px;
+    flex-shrink: 0;
 }
 
 .delete {
