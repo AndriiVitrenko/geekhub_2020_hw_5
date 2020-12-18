@@ -10,10 +10,6 @@ function isPrime(number) {
         }
     }
 
-
-
-    
-
     return true
 }
 
