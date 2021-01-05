@@ -1,3 +1,10 @@
+let rect = document.querySelector('.container').getBoundingClientRect()
+let currentItem;
+let startX = 0;
+let startY = 0;
+let elemLeft = 0;
+let elemTop = 0;
+
 document.querySelectorAll('.delete').forEach(function(item) {
     item.addEventListener('click', function(e) {
         e.target.parentNode.remove()
@@ -5,37 +12,49 @@ document.querySelectorAll('.delete').forEach(function(item) {
 })
 
 document.querySelectorAll('.togging__item').forEach(function(item) {
-    item.addEventListener('mousedown', function(event) {
-        item.style.zIndex = 1000;
-        let marginLeft = (document.body.offsetWidth - item.parentNode.offsetWidth) / 2;
-        let marginTop = (document.body.offsetHeight - item.parentNode.offsetHeight) / 2;
-        let X = event.pageX - marginLeft;
-        let Y = event.pageY - marginTop;
-
-        moveAt(X, Y)
-
-        function moveAt(pageX, pageY) {
-            let left = pageX - item.offsetWidth / 2;
-            let top = pageY - item.offsetHeight / 2;
-
-            if (left >= 0 && left <= item.parentNode.offsetWidth - item.offsetWidth) {
-                item.style.left = left + 'px'
-            }
-            
-            if (top >= 0 && top <= item.parentNode.offsetHeight - item.offsetHeight) {
-                item.style.top = top + 'px'
-            }
-        }
-
-        function onMouseMove(event) {
-            moveAt(event.pageX - marginLeft, event.pageY - marginTop);
-        }
-
-        document.addEventListener('mousemove', onMouseMove);
-
-        item.addEventListener('mouseup', function() {
-            document.removeEventListener('mousemove', onMouseMove)
-            item.style.zIndex = 500;
-        })
-    })
+    item.addEventListener('mousedown', {handleEvent: onDragStart, item: item})
 })
+
+function onDragStart(e) {
+    currentItem = this.item
+    currentItem.style.zIndex = 1000;
+
+    startX = startX || e.clientX - rect.x;
+    startY = startY || e.clientY - rect.y;
+
+    onDrag(e)
+
+    document.addEventListener('mousemove', onDrag)
+    document.addEventListener('mouseup', onDragEnd)
+}
+
+function onDrag(e) {    
+
+    elemLeft = e.clientX - startX - rect.x;
+    elemTop = e.clientY - startY - rect.y;
+
+    if (rect.width - elemLeft - currentItem.offsetWidth < 0 && !currentItem.classList.contains('tooRight')) {
+        currentItem.classList.add('tooRight')
+    }
+    else if (rect.width - elemLeft - currentItem.offsetWidth >= 20 && currentItem.classList.contains('tooRight')) {
+        currentItem.classList.remove('tooRight')
+    }
+    
+    elemLeft = Math.max(0, elemLeft);
+    elemLeft = Math.min(elemLeft, rect.width - currentItem.offsetWidth);
+
+    elemTop = Math.max(0, elemTop);
+    elemTop = Math.min(elemTop, rect.height - currentItem.offsetHeight);
+
+    currentItem.style.left = elemLeft + 'px';
+    currentItem.style.top = elemTop + 'px';
+}
+
+function onDragEnd(e) {
+    onDrag(e)
+
+    currentItem.style.zIndex = 500;
+
+    document.removeEventListener('mousemove', onDrag)
+    document.removeEventListener('mouseup', onDragEnd)
+}
